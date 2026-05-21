@@ -19,6 +19,8 @@ services:
       TRUSTED_PROXY: true
     volumes:
       - payloads:/var/plop/payloads
+    ports:
+      - "3030:3030"
     healthcheck:
       test: ["CMD", "curl", "-fs", "http://localhost:3030/health"]
       interval: 30s
