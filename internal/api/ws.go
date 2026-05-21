@@ -14,7 +14,9 @@ import (
 
 var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
-		return r.Header.Get("Origin") == "https://plop.mobasity.com"
+		origin := r.Header.Get("Origin")
+		// Go clients (desktop app) don't send Origin; browsers must match the production host.
+		return origin == "" || origin == "https://plop.mobasity.com"
 	},
 }
 

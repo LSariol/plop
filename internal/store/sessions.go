@@ -4,11 +4,8 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"time"
-
-	"github.com/jackc/pgx/v5"
 )
 
 func (s *Store) CreateSession(ctx context.Context, username string, ttl time.Duration) (string, error) {
@@ -29,21 +26,6 @@ func (s *Store) CreateSession(ctx context.Context, username string, ttl time.Dur
 	return token, nil
 }
 
-func (s *Store) ValidateSession(ctx context.Context, token string) (string, error) {
-	var username string
-	err := s.pool.QueryRow(ctx,
-		`SELECT username FROM sessions
-         WHERE token = $1 AND expires_at > now()`,
-		token,
-	).Scan(&username)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return "", nil // empty string signals invalid/expired — not an error
-	}
-	if err != nil {
-		return "", fmt.Errorf("query session: %w", err)
-	}
-	return username, nil
-}
 
 func (s *Store) DeleteSession(ctx context.Context, token string) error {
 	_, err := s.pool.Exec(ctx,

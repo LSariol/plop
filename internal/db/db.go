@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -15,24 +14,6 @@ import (
 //go:embed migrations/*.sql
 var migrationsFS embed.FS
 
-type Store struct {
-	pool *pgxpool.Pool
-	Ctx  context.Context
-}
-
-type Config struct {
-	DatabaseURL string
-	User        string
-	Password    string
-}
-
-type User struct {
-	Username         string
-	Password         string
-	SessionID        *string
-	SessionExpiresAt *time.Time
-	CreatedAt        time.Time
-}
 
 func New(ctx context.Context, dbURL string) (*pgxpool.Pool, error) {
 	cfg, err := pgxpool.ParseConfig(dbURL)
@@ -60,17 +41,6 @@ func New(ctx context.Context, dbURL string) (*pgxpool.Pool, error) {
 	return pool, nil
 }
 
-func (s *Store) Close() {
-	s.pool.Close()
-}
-
-func (s *Store) Ping(ctx context.Context) error {
-
-	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
-	defer cancel()
-
-	return s.pool.Ping(ctx)
-}
 
 func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
 	// Create a tracking table if it doesn't exist

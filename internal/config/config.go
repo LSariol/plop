@@ -9,17 +9,15 @@ import (
 )
 
 type Config struct {
-	ServerPort          string
-	PayloadDir          string
-	ClientToken         string
-	SessionSecret       string
-	MaxUploadBytes      int64
-	PayloadTTL          time.Duration
-	DatabaseURL         string
-	LogFormat           string
-	LogLevel            string
-	AllowRegistration   bool
-	TrustedProxy        bool
+	ServerPort        string
+	PayloadDir        string
+	MaxUploadBytes    int64
+	PayloadTTL        time.Duration
+	DatabaseURL       string
+	LogFormat         string
+	LogLevel          string
+	AllowRegistration bool
+	TrustedProxy      bool
 }
 
 func Load() (Config, error) {
@@ -33,17 +31,15 @@ func Load() (Config, error) {
 	}
 
 	return Config{
-		ServerPort:          getEnv("SERVER_PORT", "8080"),
-		PayloadDir:          getEnv("PAYLOAD_DIR", "/var/plop/payloads"),
-		ClientToken:         getEnv("CLIENT_TOKEN", ""),   // no longer used for auth; kept for .env compat
-		SessionSecret:       getEnv("SESSION_SECRET", ""), // sessions stored in DB; kept for .env compat
-		MaxUploadBytes:      maxMB * 1024 * 1024,
-		PayloadTTL:          time.Duration(ttlHours) * time.Hour,
-		DatabaseURL:         requireEnv("DATABASE_URL"),
-		LogFormat:           getEnv("LOG_FORMAT", "text"),
-		LogLevel:            getEnv("LOG_LEVEL", "info"),
-		AllowRegistration:   getEnv("ALLOW_REGISTRATION", "false") == "true",
-		TrustedProxy:        getEnv("TRUSTED_PROXY", "false") == "true",
+		ServerPort:        getEnv("SERVER_PORT", "8080"),
+		PayloadDir:        getEnv("PAYLOAD_DIR", "/var/plop/payloads"),
+		MaxUploadBytes:    maxMB * 1024 * 1024,
+		PayloadTTL:        time.Duration(ttlHours) * time.Hour,
+		DatabaseURL:       requireEnv("DATABASE_URL"),
+		LogFormat:         getEnv("LOG_FORMAT", "text"),
+		LogLevel:          getEnv("LOG_LEVEL", "info"),
+		AllowRegistration: getEnv("ALLOW_REGISTRATION", "false") == "true",
+		TrustedProxy:      getEnv("TRUSTED_PROXY", "false") == "true",
 	}, nil
 }
 

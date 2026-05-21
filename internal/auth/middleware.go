@@ -91,20 +91,3 @@ func RequireDesktopToken(pool *pgxpool.Pool, next http.Handler) http.Handler {
 	})
 }
 
-// RequireClientToken is middleware that protects a route behind a static Bearer token.
-// It is used exclusively for desktop client routes (/ws/client, /payload/:id, etc).
-// If the token does not match, the request is rejected with 401 Unauthorized.
-//
-// Usage in routes.go:
-//
-//	mux.Handle("GET /ws/client", auth.RequireClientToken(cfg.ClientToken, http.HandlerFunc(h.WebSocket)))
-func RequireClientToken(expected string, next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		if token != expected {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
