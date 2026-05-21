@@ -207,6 +207,14 @@ header {
   gap: 18px;
 }
 
+/* ─── Form inside a card ────────────────────────────────────────────────── */
+
+.card form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
 /* ─── Form Elements ──────────────────────────────────────────────────────── */
 
 .form-group {

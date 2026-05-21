@@ -137,13 +137,13 @@ function updatePreviewGrid() {
 
 function getFileIcon(file) {
     const t = file.type;
-    if (t.startsWith('video/'))       return '🎬';
-    if (t.startsWith('audio/'))       return '🎵';
-    if (t === 'application/pdf')      return '📄';
-    if (t.includes('zip') || t.includes('archive') || t.includes('compressed')) return '🗜️';
-    if (t.includes('word') || t.includes('document')) return '📝';
-    if (t.includes('sheet') || t.includes('excel'))   return '📊';
-    return '📎';
+    if (t.startsWith('video/'))       return 'video';
+    if (t.startsWith('audio/'))       return 'audio';
+    if (t === 'application/pdf')      return 'pdf';
+    if (t.includes('zip') || t.includes('archive') || t.includes('compressed')) return 'zip';
+    if (t.includes('word') || t.includes('document')) return 'doc';
+    if (t.includes('sheet') || t.includes('excel'))   return 'xls';
+    return 'file';
 }
 
 // ─── Tags ─────────────────────────────────────────────────────────────────
@@ -214,7 +214,7 @@ async function handleSubmit(e) {
             throw new Error(`Server error: ${res.status}`);
         }
 
-        showStatus('✓ Sent to desktop!', 'success');
+        showStatus('Sent to desktop!', 'success');
         resetForm();
 
         setTimeout(() => {
@@ -284,7 +284,7 @@ function showDeliveryToast() {
     const toast = document.createElement('div');
     toast.className = 'status success';
     toast.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:100;padding:0.75rem 1.25rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);';
-    toast.textContent = '✓ Delivered to desktop';
+    toast.textContent = 'Delivered to desktop';
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 4000);
 }

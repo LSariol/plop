@@ -7,6 +7,7 @@
   <meta name="theme-color" content="#5B4FD9">
   <title>Plop — Send to Desktop</title>
   <link rel="manifest" href="/static/manifest.json">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
   <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
   <link rel="stylesheet" href="/static/style.css">
@@ -44,7 +45,7 @@
           tabindex="0"
           aria-label="Tap to add photos or files"
         >
-          <div class="upload-zone-icon">📎</div>
+          <div class="upload-zone-icon">+</div>
           <div class="upload-zone-text">Add photos or files</div>
           <div class="upload-zone-hint">Images, PDFs, or anything else</div>
         </div>
@@ -101,7 +102,6 @@
 
       <!-- Submit -->
       <button type="submit" class="btn" id="sendBtn">
-        <span aria-hidden="true">📤</span>
         Send to Desktop
       </button>
 

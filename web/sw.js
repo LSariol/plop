@@ -62,6 +62,20 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Only cache static assets — API responses must go to the network every time
+    // so the UI always reflects current server state (session, desktop list, etc.).
+    if (!event.request.url.includes('/static/')) {
+        event.respondWith(
+            fetch(event.request).catch(() =>
+                new Response(
+                    JSON.stringify({ error: 'Offline — cannot reach server' }),
+                    { status: 503, headers: { 'Content-Type': 'application/json' } }
+                )
+            )
+        );
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then((cached) => {
             if (cached) return cached;
@@ -73,13 +87,7 @@ self.addEventListener('fetch', (event) => {
                 const clone = response.clone();
                 caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
                 return response;
-            }).catch(() => {
-                // Offline fallback for HTML navigation requests
-                if (event.request.headers.get('accept')?.includes('text/html')) {
-                    return caches.match('/app');
-                }
-                return new Response('Offline', { status: 503 });
-            });
+            }).catch(() => new Response('Offline', { status: 503 }));
         })
     );
 });

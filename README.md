@@ -19,7 +19,7 @@ cp .env.exmaple .env
 # Optionally: ALLOW_REGISTRATION=true (to create your account)
 
 # 2. Start the server
-go run ./cmd/server
+go run ./cmd/server 
 ```
 
 The server runs on port `8080` by default (`SERVER_PORT` to override). Migrations run automatically on startup — no separate DB setup step needed beyond creating the database and schema.
@@ -46,4 +46,3 @@ Deployed via [LightHouse](https://github.com/LSariol/LightHouse) CI/CD. Requires
 - `spark` external Docker network on the host
 - Deployable code on `main`
 
-See `Infrastructure.md` for the full checklist.

@@ -71,6 +71,11 @@ async function revokeDesktop(id, btn) {
     } catch (err) {
         btn.disabled = false;
         btn.textContent = 'Revoke';
+        const errMsg = document.createElement('span');
+        errMsg.style.cssText = 'margin-left:0.5rem;font-size:0.8rem;color:var(--error);';
+        errMsg.textContent = 'Failed — try again';
+        btn.parentNode.appendChild(errMsg);
+        setTimeout(() => errMsg.remove(), 3000);
     }
 }
 

@@ -83,7 +83,7 @@ func SecurityHeaders(next http.Handler) http.Handler {
 			"default-src 'self'; "+
 				"script-src 'self'; "+
 				"connect-src 'self' wss://plop.mobasity.com; "+
-				"img-src 'self' data:; "+
+				"img-src 'self' data: blob:; "+
 				"style-src 'self' 'unsafe-inline'")
 		next.ServeHTTP(w, r)
 	})

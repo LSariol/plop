@@ -37,7 +37,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := h.store.CreateSession(r.Context(), body.Username, 7*24*time.Hour)
+	token, err := h.store.CreateSession(r.Context(), body.Username, 30*24*time.Hour)
 	if err != nil {
 		slog.Error("create session", "user", body.Username, "error", err)
 		writeError(w, "internal error", http.StatusInternalServerError)
@@ -54,7 +54,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 		Path:     "/",
-		MaxAge:   int((7 * 24 * time.Hour).Seconds()),
+		MaxAge:   int((30 * 24 * time.Hour).Seconds()),
 	})
 	w.WriteHeader(http.StatusOK)
 }
