@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login to Plop">
+  <meta name="theme-color" content="#5B4FD9">
+  <title>Plop — Login</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/" class="header-back" aria-label="Back to home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </a>
+      <img class="header-logo" src="/static/icons/plop1.png" alt="Plop logo">
+      <h1 class="header-title">Plop</h1>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <section class="hero">
+      <p class="hero-title">Welcome back</p>
+      <p class="hero-copy">Log in to send your content to the desktop.</p>
+    </section>
+
+    <div class="card">
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" name="username" type="text"
+                 placeholder="your username"
+                 required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password"
+                 placeholder="••••••••"
+                 required autocomplete="current-password">
+        </div>
+
+        <div id="authStatus" class="status" aria-live="polite"></div>
+
+        <button type="submit" class="btn">Login</button>
+
+        <p class="helper-text">
+          No account yet? <a class="link" href="/create-account">Create one</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <footer>Plop · your quick phone-to-desktop utility</footer>
+  <script src="/static/auth.js"></script>
+</body>
+</html>

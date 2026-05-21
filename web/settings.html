@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#5B4FD9">
+  <title>Plop — Settings</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="/app" class="header-back" aria-label="Back to app">&#8592;</a>
+      <img class="header-logo" src="/static/icons/plop1.png" alt="Plop logo">
+      <h1 class="header-title">Settings</h1>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+
+    <!-- Paired Desktops -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Paired Desktops</label>
+        <p class="helper-text" style="text-align:left; margin-bottom: 1rem;">
+          These PCs are linked to your account and receive your uploads.
+        </p>
+        <div id="desktopList">
+          <p class="helper-text" style="text-align:left;">Loading…</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pair New Desktop -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Pair a New Desktop</label>
+        <p class="helper-text" style="text-align:left; margin-bottom: 1rem;">
+          Generate a one-time code, add it to <code>config.toml</code> as
+          <code>pairing_code</code>, and restart Plop on your PC.
+        </p>
+        <button type="button" class="btn btn-outline" id="pairBtn">
+          Generate Pairing Code
+        </button>
+        <div id="pairResult" style="display:none; margin-top: 1.25rem; text-align: center;">
+          <div id="pairCode" style="font-family: monospace; font-size: 2rem; font-weight: 700; letter-spacing: 0.15em; color: var(--primary); margin-bottom: 0.5rem;"></div>
+          <p id="pairCountdown" class="helper-text" style="text-align:center; margin-bottom: 0.5rem;"></p>
+          <p class="helper-text" style="text-align:center;">Add to config.toml: <code>pairing_code = "XXXXXXXX"</code></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sign Out -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Account</label>
+        <p class="helper-text" style="text-align:left; margin-bottom: 1rem;">
+          Sign out of Plop on this device.
+        </p>
+        <button type="button" class="btn btn-outline" id="logoutBtn"
+                style="color: var(--error); border-color: var(--error); width: 100%;">
+          Sign Out
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/settings.js"></script>
+</body>
+</html>

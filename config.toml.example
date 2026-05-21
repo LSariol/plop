@@ -1,0 +1,17 @@
+server_url   = "https://your-server.example.com"
+machine_name = "My PC"
+
+# Step 1: Log in at your server and click "Pair Desktop" to get a code
+# Step 2: Add it below and restart:
+# pairing_code = "XXXXXXXX"
+
+[tags]
+default_folder = "C:/Users/You/Desktop/Plop"
+
+[[tags.rules]]
+tag    = "work"
+folder = "C:/Users/You/Documents/Work"
+
+[[tags.rules]]
+tag    = "photos"
+folder = "C:/Users/You/Pictures/Plop"

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Send files, photos, and notes to your desktop">
+  <meta name="theme-color" content="#5B4FD9">
+  <title>Plop — Send to Desktop</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <img class="header-logo" src="/static/icons/plop1.png" alt="Plop logo">
+      <h1 class="header-title">Plop</h1>
+      <a href="/settings" class="header-settings" aria-label="Settings" title="Settings">&#9881;</a>
+    </div>
+  </header>
+
+  <div class="page-wrapper">
+    <form id="sendForm" class="card">
+
+      <!-- Message -->
+      <div class="form-group">
+        <label for="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          placeholder="What do you want to send?"
+          aria-label="Message content"
+        ></textarea>
+      </div>
+
+      <!-- File attachments -->
+      <div class="form-group">
+        <label>Attachments</label>
+        <div
+          class="upload-zone"
+          id="uploadBox"
+          role="button"
+          tabindex="0"
+          aria-label="Tap to add photos or files"
+        >
+          <div class="upload-zone-icon">📎</div>
+          <div class="upload-zone-text">Add photos or files</div>
+          <div class="upload-zone-hint">Images, PDFs, or anything else</div>
+        </div>
+        <input
+          type="file"
+          id="fileInput"
+          name="files"
+          multiple
+          style="display:none"
+          aria-label="File upload input"
+        >
+        <div
+          id="previewGrid"
+          class="preview-grid"
+          aria-live="polite"
+          aria-label="Attached files"
+        ></div>
+      </div>
+
+      <!-- Description (optional) -->
+      <div class="form-group">
+        <label for="description">
+          Description
+          <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:0.78rem; color:var(--text-muted);">(optional)</span>
+        </label>
+        <textarea
+          id="description"
+          name="description"
+          placeholder="Any extra context or notes…"
+          style="min-height: 80px;"
+          aria-label="Optional description"
+        ></textarea>
+      </div>
+
+      <!-- Tags (optional) -->
+      <div class="form-group">
+        <label for="tagsInput">
+          Tags
+          <span style="font-weight:400; text-transform:none; letter-spacing:0; font-size:0.78rem; color:var(--text-muted);">(optional)</span>
+        </label>
+        <input
+          type="text"
+          id="tagsInput"
+          name="tags"
+          placeholder="receipt, idea, photo — press Enter to add"
+          aria-label="Add tags for organisation"
+        >
+        <div class="tags-container" id="tagsContainer"></div>
+        <p class="helper-text" style="text-align:left;">Press Enter or comma to add a tag</p>
+      </div>
+
+      <!-- Status -->
+      <div id="statusMessage" class="status" role="status" aria-live="polite"></div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn" id="sendBtn">
+        <span aria-hidden="true">📤</span>
+        Send to Desktop
+      </button>
+
+    </form>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

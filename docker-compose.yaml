@@ -1,0 +1,36 @@
+name: plop
+
+services:
+  plop:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plop
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${PLOP_DATABASE_URL}
+      SERVER_PORT: 3030
+      PAYLOAD_DIR: /var/plop/payloads
+      PAYLOAD_TTL_HOURS: 24
+      MAX_UPLOAD_MB: 50
+      LOG_FORMAT: json
+      LOG_LEVEL: info
+      ALLOW_REGISTRATION: false
+      TRUSTED_PROXY: true
+    volumes:
+      - payloads:/var/plop/payloads
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:3030/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - spark
+
+volumes:
+  payloads:
+
+networks:
+  spark:
+    external: true
