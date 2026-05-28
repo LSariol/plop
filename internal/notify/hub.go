@@ -77,6 +77,18 @@ func (h *Hub) Broadcast(msg WSMessage) {
 	}
 }
 
+// HasConnectedClients reports whether userID has at least one connected desktop.
+func (h *Hub) HasConnectedClients(userID string) bool {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	for _, c := range h.clients {
+		if c.userID == userID {
+			return true
+		}
+	}
+	return false
+}
+
 // SendToUser delivers a message to all connected desktops belonging to userID.
 func (h *Hub) SendToUser(userID string, msg WSMessage) {
 	h.mu.RLock()

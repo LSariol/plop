@@ -224,6 +224,28 @@ func (s *Store) PendingPayloads(ctx context.Context, userID string) ([]PayloadRe
 	return result, rows.Err()
 }
 
+// UserPayloadIDs returns all payload IDs belonging to username regardless of ack state.
+// Used before deleting the user so their payload directories can be removed from disk.
+func (s *Store) UserPayloadIDs(ctx context.Context, username string) ([]string, error) {
+	rows, err := s.pool.Query(ctx,
+		`SELECT id FROM payloads WHERE user_id = $1`,
+		username,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query user payloads: %w", err)
+	}
+	defer rows.Close()
+	var ids []string
+	for rows.Next() {
+		var id string
+		if err := rows.Scan(&id); err != nil {
+			return nil, fmt.Errorf("scan payload id: %w", err)
+		}
+		ids = append(ids, id)
+	}
+	return ids, rows.Err()
+}
+
 func (s *Store) DeleteExpiredPayloads(ctx context.Context) error {
 	rows, err := s.pool.Query(ctx,
 		`DELETE FROM payloads

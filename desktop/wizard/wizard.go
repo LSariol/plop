@@ -25,6 +25,9 @@ import (
 //go:embed setup.html
 var setupHTML string
 
+//go:embed config-editor.html
+var configEditorHTML string
+
 // Run shows the setup wizard in the user's default browser and blocks until
 // the user completes pairing. Config and token files are written to exeDir.
 func Run(exeDir string) error {
@@ -112,6 +115,98 @@ func Run(exeDir string) error {
 	defer cancel()
 	srv.Shutdown(ctx)
 	return nil
+}
+
+// StartConfigServer starts a persistent HTTP server that serves the config editor
+// at GET /config and saves changes at POST /config. It returns immediately with
+// the local port number. The server runs until the process exits.
+func StartConfigServer(exeDir string) (int, error) {
+	tmpl, err := template.New("config").Parse(configEditorHTML)
+	if err != nil {
+		return 0, fmt.Errorf("parse config template: %w", err)
+	}
+
+	cfgPath := filepath.Join(exeDir, "config.toml")
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /config", func(w http.ResponseWriter, r *http.Request) {
+		cfg, _ := config.Load(cfgPath)
+		type tmplData struct {
+			ServerURL     string
+			MachineName   string
+			DefaultFolder string
+			Rules         []config.TagRule
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		tmpl.Execute(w, tmplData{
+			ServerURL:     cfg.ServerURL,
+			MachineName:   cfg.MachineName,
+			DefaultFolder: cfg.Tags.DefaultFolder,
+			Rules:         cfg.Tags.Rules,
+		})
+	})
+
+	mux.HandleFunc("POST /config", func(w http.ResponseWriter, r *http.Request) {
+		var body struct {
+			DefaultFolder string `json:"default_folder"`
+			Rules         []struct {
+				Tag    string `json:"tag"`
+				Folder string `json:"folder"`
+			} `json:"rules"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			writeWizardError(w, "invalid request", http.StatusBadRequest)
+			return
+		}
+		if body.DefaultFolder == "" {
+			writeWizardError(w, "default_folder is required", http.StatusBadRequest)
+			return
+		}
+
+		// Load current config to preserve server_url and machine_name.
+		cur, _ := config.Load(cfgPath)
+
+		rules := make([]config.TagRule, 0, len(body.Rules))
+		for _, r := range body.Rules {
+			rules = append(rules, config.TagRule{Tag: r.Tag, Folder: r.Folder})
+		}
+
+		if err := writeFullConfig(cfgPath, cur.ServerURL, cur.MachineName, body.DefaultFolder, rules); err != nil {
+			writeWizardError(w, "could not write config: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		slog.Info("config updated via editor")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	})
+
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return 0, fmt.Errorf("start config server: %w", err)
+	}
+	port := listener.Addr().(*net.TCPAddr).Port
+
+	srv := &http.Server{Handler: mux}
+	go srv.Serve(listener)
+
+	slog.Info("config server running", "port", port)
+	return port, nil
+}
+
+func writeFullConfig(cfgPath, serverURL, machineName, defaultFolder string, rules []config.TagRule) error {
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "server_url   = %q\n", serverURL)
+	fmt.Fprintf(&sb, "machine_name = %q\n", machineName)
+	sb.WriteString("\n[tags]\n")
+	fmt.Fprintf(&sb, "default_folder = %q\n", defaultFolder)
+	for _, r := range rules {
+		sb.WriteString("\n[[tags.rules]]\n")
+		fmt.Fprintf(&sb, "tag    = %q\n", r.Tag)
+		fmt.Fprintf(&sb, "folder = %q\n", r.Folder)
+	}
+	return os.WriteFile(cfgPath, []byte(sb.String()), 0644)
 }
 
 func writeWizardError(w http.ResponseWriter, msg string, status int) {

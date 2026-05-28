@@ -5,21 +5,28 @@ const state = {
 };
 
 // DOM elements
-const sendForm      = document.getElementById('sendForm');
-const messageInput  = document.getElementById('message');
-const uploadBox     = document.getElementById('uploadBox');
-const fileInput     = document.getElementById('fileInput');
-const previewGrid   = document.getElementById('previewGrid');
+const sendForm         = document.getElementById('sendForm');
+const messageInput     = document.getElementById('message');
+const uploadBox        = document.getElementById('uploadBox');
+const fileInput        = document.getElementById('fileInput');
+const previewGrid      = document.getElementById('previewGrid');
 const descriptionInput = document.getElementById('description');
-const tagsInput     = document.getElementById('tagsInput');
-const tagsContainer = document.getElementById('tagsContainer');
-const sendBtn       = document.getElementById('sendBtn');
-const statusMessage = document.getElementById('statusMessage');
+const tagsInput        = document.getElementById('tagsInput');
+const tagsContainer    = document.getElementById('tagsContainer');
+const sendBtn          = document.getElementById('sendBtn');
+const statusMessage    = document.getElementById('statusMessage');
+const progressSection  = document.getElementById('progressSection');
+const returnBtn        = document.getElementById('returnBtn');
+
+// Tracks the payload ID we're waiting on delivery confirmation for.
+let pendingDeliveryId = null;
+let deliveryTimeout   = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     registerServiceWorker();
     connectDeliveryEvents();
+    returnBtn.addEventListener('click', showForm);
     messageInput.focus();
 });
 
@@ -196,10 +203,10 @@ async function handleSubmit(e) {
     }
     state.files.forEach((file) => formData.append('files', file));
 
-    try {
-        sendBtn.disabled = true;
-        showStatus('Sending to desktop…', 'info');
+    showProgress();
+    setStep('step1', 'active');
 
+    try {
         const res = await fetch('/upload', {
             method: 'POST',
             credentials: 'include',
@@ -211,26 +218,84 @@ async function handleSubmit(e) {
             return;
         }
         if (!res.ok) {
-            throw new Error(`Server error: ${res.status}`);
+            const data = await res.json().catch(() => ({}));
+            setStep('step1', 'failed', data.error || `Upload failed (${res.status})`);
+            showReturnBtn();
+            return;
         }
 
-        showStatus('Sent to desktop!', 'success');
-        resetForm();
+        const data = await res.json();
+        setStep('step1', 'complete');
+        setStep('step2', 'complete');
 
-        setTimeout(() => {
-            statusMessage.className = 'status';
-        }, 3500);
+        if (!data.desktop_connected) {
+            setStep('step3', 'cached', 'Cached to server — desktop will receive when online');
+            showReturnBtn();
+            return;
+        }
+
+        setStep('step3', 'active');
+        pendingDeliveryId = data.id;
+        deliveryTimeout = setTimeout(() => {
+            if (pendingDeliveryId === data.id) {
+                pendingDeliveryId = null;
+                setStep('step3', 'cached', 'Cached to server — desktop will receive when online');
+                showReturnBtn();
+            }
+        }, 30000);
+
     } catch (err) {
         console.error('Send failed:', err);
-        showStatus('Failed to send — check your connection and try again.', 'error');
-    } finally {
-        sendBtn.disabled = false;
+        setStep('step1', 'failed', 'Could not reach server — check your connection');
+        showReturnBtn();
     }
 }
 
+// ─── Progress helpers ─────────────────────────────────────────────────────
+
+function showProgress() {
+    sendForm.style.display = 'none';
+    progressSection.style.display = 'flex';
+    ['step1','step2','step3','step4','step5'].forEach(id => setStep(id, 'pending'));
+    returnBtn.style.display = 'none';
+}
+
+function showForm() {
+    clearTimeout(deliveryTimeout);
+    pendingDeliveryId = null;
+    progressSection.style.display = 'none';
+    sendForm.style.display = '';
+    resetForm();
+}
+
+function setStep(id, state, errorText) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'step-card ' + state;
+    if (id === 'step3') {
+        const errEl = document.getElementById('step3Error');
+        if (errEl) errEl.textContent = (state === 'failed' || state === 'cached') && errorText ? errorText : '';
+    }
+    if (state === 'cached' && errorText) {
+        const label = el.querySelector('.step-label');
+        if (label) label.textContent = errorText;
+    }
+}
+
+function showReturnBtn() {
+    returnBtn.style.display = 'block';
+}
+
+const STEP_LABELS = {
+    step1: 'Uploading to server',
+    step2: 'Upload complete',
+    step3: 'Sending to desktop',
+    step4: 'Desktop transfer complete',
+    step5: 'Plop completed',
+};
+
 function resetForm() {
     sendForm.reset();
-    // Revoke object URLs before clearing
     previewGrid.querySelectorAll('img[data-object-url]').forEach((img) => {
         URL.revokeObjectURL(img.dataset.objectUrl);
     });
@@ -239,6 +304,14 @@ function resetForm() {
     updatePreviewGrid();
     updateTagsDisplay();
     updateUploadZoneState();
+    // Restore step labels that may have been mutated by the cached state.
+    Object.entries(STEP_LABELS).forEach(([id, label]) => {
+        const el = document.getElementById(id);
+        if (el) {
+            const labelEl = el.querySelector('.step-label');
+            if (labelEl) labelEl.textContent = label;
+        }
+    });
     messageInput.focus();
 }
 
@@ -269,24 +342,22 @@ function connectDeliveryEvents() {
     const es = new EventSource('/events');
 
     es.addEventListener('delivered', (e) => {
-        try {
-            JSON.parse(e.data); // validate
-        } catch (_) { return; }
-        showDeliveryToast();
+        let payload;
+        try { payload = JSON.parse(e.data); } catch (_) { return; }
+
+        if (pendingDeliveryId && payload.id === pendingDeliveryId) {
+            clearTimeout(deliveryTimeout);
+            pendingDeliveryId = null;
+            setStep('step3', 'complete');
+            setStep('step4', 'complete');
+            setStep('step5', 'complete');
+            showReturnBtn();
+        }
     });
 
     es.onerror = () => {
         // Browser auto-reconnects on error — no action needed.
     };
-}
-
-function showDeliveryToast() {
-    const toast = document.createElement('div');
-    toast.className = 'status success';
-    toast.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:100;padding:0.75rem 1.25rem;border-radius:var(--radius-md);box-shadow:var(--shadow-md);';
-    toast.textContent = 'Delivered to desktop';
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
 }
 
 // ─── Service Worker ───────────────────────────────────────────────────────

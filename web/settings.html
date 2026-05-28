@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#5B4FD9">
+  <meta name="theme-color" content="#0F0F13">
   <title>Plop — Settings</title>
   <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
@@ -53,6 +53,26 @@
       </div>
     </div>
 
+    <!-- Change Password -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Change Password</label>
+        <p class="helper-text" style="text-align:left; margin-bottom: 1rem;">
+          Update the password for your Plop account.
+        </p>
+        <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+          <input type="password" id="currentPassword" class="input"
+                 placeholder="Current password" autocomplete="current-password">
+          <input type="password" id="newPassword" class="input"
+                 placeholder="New password (min 8 characters)" autocomplete="new-password" minlength="8">
+        </div>
+        <div id="passwordStatus" class="status" role="status" aria-live="polite" style="margin-bottom:0.75rem;"></div>
+        <button type="button" class="btn" id="changePasswordBtn" style="width:100%;">
+          Change Password
+        </button>
+      </div>
+    </div>
+
     <!-- Sign Out -->
     <div class="card">
       <div class="form-group" style="margin-bottom: 0;">
@@ -64,6 +84,40 @@
                 style="color: var(--error); border-color: var(--error); width: 100%;">
           Sign Out
         </button>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label style="color: var(--error);">Danger Zone</label>
+        <p class="helper-text" style="text-align:left; margin-bottom: 1rem;">
+          Permanently deletes your account, all paired desktops, and all stored data. This cannot be undone.
+        </p>
+        <div id="deleteAccountInitial">
+          <button type="button" class="btn btn-outline" id="deleteAccountBtn"
+                  style="color: var(--error); border-color: var(--error); width: 100%;">
+            Delete Account
+          </button>
+        </div>
+        <div id="deleteAccountConfirm" style="display:none;">
+          <p class="helper-text" style="text-align:left; margin-bottom:0.75rem; color: var(--error);">
+            Enter your password to confirm deletion.
+          </p>
+          <input type="password" id="deletePassword" class="input"
+                 placeholder="Your password" autocomplete="current-password"
+                 style="margin-bottom:0.75rem;">
+          <div id="deleteStatus" class="status" role="status" aria-live="polite" style="margin-bottom:0.75rem;"></div>
+          <div style="display:flex; gap:0.75rem;">
+            <button type="button" class="btn btn-outline" id="deleteCancelBtn" style="flex:1;">
+              Cancel
+            </button>
+            <button type="button" class="btn" id="deleteConfirmBtn"
+                    style="flex:1; background:var(--error); border-color:var(--error);">
+              Yes, delete my account
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 

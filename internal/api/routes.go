@@ -23,6 +23,7 @@ func RegisterRoutes(
 	loginLimiter    := newIPLimiter(ctx, 5, time.Minute)  // 5 attempts/min/IP
 	registerLimiter := newIPLimiter(ctx, 3, time.Minute)  // 3 registrations/min/IP
 	pairLimiter     := newIPLimiter(ctx, 10, time.Minute) // 10 pair attempts/min/IP
+	uploadLimiter   := newIPLimiter(ctx, 30, time.Minute) // 30 uploads/min/IP
 
 	// Public routes
 	mux.Handle("GET /{$}", serveFileFS("home.html"))
@@ -39,8 +40,10 @@ func RegisterRoutes(
 	// PWA routes — session cookie required
 	mux.Handle("GET /app", requireSession(serveFileFS("app.html")))
 	mux.Handle("GET /settings", requireSession(serveFileFS("settings.html")))
-	mux.Handle("POST /upload", requireSession(http.HandlerFunc(h.Upload)))
+	mux.Handle("POST /upload", requireSession(withRateLimit(uploadLimiter, h.clientIP)(http.HandlerFunc(h.Upload))))
 	mux.Handle("POST /auth/logout", requireSession(http.HandlerFunc(h.Logout)))
+	mux.Handle("PUT /auth/password", requireSession(http.HandlerFunc(h.ChangePassword)))
+	mux.Handle("DELETE /auth/account", requireSession(http.HandlerFunc(h.DeleteAccount)))
 	mux.Handle("POST /pairing-code", requireSession(http.HandlerFunc(h.GeneratePairingCode)))
 	mux.Handle("GET /events", requireSession(http.HandlerFunc(h.Events)))
 	mux.Handle("GET /desktops", requireSession(http.HandlerFunc(h.GetDesktops)))

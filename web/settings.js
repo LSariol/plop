@@ -2,6 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     loadDesktops();
     document.getElementById('pairBtn').addEventListener('click', generatePairingCode);
     document.getElementById('logoutBtn').addEventListener('click', doLogout);
+    document.getElementById('changePasswordBtn').addEventListener('click', doChangePassword);
+    document.getElementById('deleteAccountBtn').addEventListener('click', showDeleteConfirm);
+    document.getElementById('deleteCancelBtn').addEventListener('click', hideDeleteConfirm);
+    document.getElementById('deleteConfirmBtn').addEventListener('click', doDeleteAccount);
 });
 
 // ─── Paired Desktops ──────────────────────────────────────────────────────
@@ -97,6 +101,105 @@ async function doLogout() {
         btn.disabled = false;
         btn.textContent = 'Sign Out';
     }
+}
+
+// ─── Change Password ──────────────────────────────────────────────────────
+
+async function doChangePassword() {
+    const btn = document.getElementById('changePasswordBtn');
+    const current = document.getElementById('currentPassword').value;
+    const next = document.getElementById('newPassword').value;
+    const statusEl = document.getElementById('passwordStatus');
+
+    if (!current || !next) {
+        showStatus(statusEl, 'Both fields are required.', 'error');
+        return;
+    }
+    if (next.length < 8) {
+        showStatus(statusEl, 'New password must be at least 8 characters.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    clearStatus(statusEl);
+
+    try {
+        const res = await fetch('/auth/password', {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ current_password: current, new_password: next }),
+        });
+        if (res.status === 401) { showStatus(statusEl, 'Current password is incorrect.', 'error'); return; }
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        showStatus(statusEl, 'Password changed successfully.', 'success');
+    } catch (err) {
+        showStatus(statusEl, 'Failed to change password — try again.', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Change Password';
+    }
+}
+
+// ─── Delete Account ───────────────────────────────────────────────────────
+
+function showDeleteConfirm() {
+    document.getElementById('deleteAccountInitial').style.display = 'none';
+    document.getElementById('deleteAccountConfirm').style.display = 'block';
+    document.getElementById('deletePassword').focus();
+}
+
+function hideDeleteConfirm() {
+    document.getElementById('deleteAccountConfirm').style.display = 'none';
+    document.getElementById('deleteAccountInitial').style.display = 'block';
+    document.getElementById('deletePassword').value = '';
+    clearStatus(document.getElementById('deleteStatus'));
+}
+
+async function doDeleteAccount() {
+    const btn = document.getElementById('deleteConfirmBtn');
+    const password = document.getElementById('deletePassword').value;
+    const statusEl = document.getElementById('deleteStatus');
+
+    if (!password) {
+        showStatus(statusEl, 'Please enter your password.', 'error');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Deleting…';
+    clearStatus(statusEl);
+
+    try {
+        const res = await fetch('/auth/account', {
+            method: 'DELETE',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password }),
+        });
+        if (res.status === 401) { showStatus(statusEl, 'Incorrect password.', 'error'); return; }
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        window.location.href = '/';
+    } catch (err) {
+        showStatus(statusEl, 'Failed to delete account — try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Yes, delete my account';
+    }
+}
+
+// ─── Status helpers ───────────────────────────────────────────────────────
+
+function showStatus(el, message, type) {
+    el.textContent = message;
+    el.className = 'status ' + type;
+}
+
+function clearStatus(el) {
+    el.textContent = '';
+    el.className = 'status';
 }
 
 function formatRelativeDate(iso) {

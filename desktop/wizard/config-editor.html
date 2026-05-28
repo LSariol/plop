@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plop — Config</title>
+  <style>
+    :root {
+      --primary: #5B4FD9;
+      --bg:      #FAF7F1;
+      --card:    #FFFFFF;
+      --text:    #2C2018;
+      --muted:   #A89880;
+      --border:  #E8DDD0;
+      --error:   #C03A3A;
+      --success: #4E9070;
+      --radius:  14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 4px 16px rgba(44,32,24,0.10);
+    }
+    h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.3rem; }
+    .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.5; }
+    .section { margin-bottom: 1.75rem; }
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+    .field { margin-bottom: 1rem; }
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+    input {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus { border-color: var(--primary); background: #fff; }
+    input:disabled { opacity: 0.55; cursor: not-allowed; }
+    .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
+    .rule-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .rule-row input { flex: 1; }
+    .rule-tag { max-width: 130px; }
+    .remove-btn {
+      flex-shrink: 0;
+      width: 2rem;
+      height: 2rem;
+      background: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .remove-btn:hover { border-color: var(--error); color: var(--error); }
+    .add-btn {
+      background: none;
+      border: 1.5px dashed var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 0.9rem;
+      font-size: 0.9rem;
+      color: var(--muted);
+      cursor: pointer;
+      width: 100%;
+      transition: border-color 0.15s, color 0.15s;
+      margin-top: 0.25rem;
+    }
+    .add-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .save-btn {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .save-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .msg {
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .msg.error   { background: rgba(192,58,58,0.10);  color: var(--error);   display: block; }
+    .msg.success { background: rgba(78,144,112,0.10); color: var(--success); display: block; }
+    .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Plop Config</h1>
+    <p class="subtitle">Edit where received files are saved. Server and account settings are read-only.</p>
+
+    <div class="section">
+      <div class="section-title">Account (read-only)</div>
+      <div class="field">
+        <label>Server URL</label>
+        <input id="serverURL" type="text" value="{{.ServerURL}}" disabled>
+      </div>
+      <div class="field">
+        <label>Machine Name</label>
+        <input id="machineName" type="text" value="{{.MachineName}}" disabled>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <div class="section">
+      <div class="section-title">File Routing</div>
+      <div class="field">
+        <label for="defaultFolder">Default Folder</label>
+        <input id="defaultFolder" type="text" value="{{.DefaultFolder}}"
+               placeholder="C:\Users\You\Desktop\Plop">
+        <p class="hint">Files with no matching tag go here.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Tag Rules</div>
+      <p class="hint" style="margin-bottom:0.75rem;">
+        Files tagged with a matching tag are routed to that folder. First match wins.
+      </p>
+      <div id="rulesList">
+        {{range .Rules}}
+        <div class="rule-row">
+          <input class="rule-tag" type="text" placeholder="tag" value="{{.Tag}}">
+          <input type="text" placeholder="C:\path\to\folder" value="{{.Folder}}">
+          <button class="remove-btn" type="button" title="Remove rule" onclick="removeRule(this)">×</button>
+        </div>
+        {{end}}
+      </div>
+      <button class="add-btn" type="button" onclick="addRule()">+ Add rule</button>
+    </div>
+
+    <button class="save-btn" id="saveBtn" onclick="save()">Save</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    function addRule() {
+      const list = document.getElementById('rulesList');
+      const row = document.createElement('div');
+      row.className = 'rule-row';
+      row.innerHTML = `
+        <input class="rule-tag" type="text" placeholder="tag">
+        <input type="text" placeholder="C:\\path\\to\\folder">
+        <button class="remove-btn" type="button" title="Remove rule" onclick="removeRule(this)">×</button>
+      `;
+      list.appendChild(row);
+      row.querySelector('input').focus();
+    }
+
+    function removeRule(btn) {
+      btn.closest('.rule-row').remove();
+    }
+
+    async function save() {
+      const btn = document.getElementById('saveBtn');
+      const msg = document.getElementById('msg');
+      msg.className = 'msg';
+
+      const defaultFolder = document.getElementById('defaultFolder').value.trim();
+      if (!defaultFolder) {
+        msg.className = 'msg error';
+        msg.textContent = 'Default folder is required.';
+        return;
+      }
+
+      const rows = document.querySelectorAll('#rulesList .rule-row');
+      const rules = [];
+      for (const row of rows) {
+        const inputs = row.querySelectorAll('input');
+        const tag    = inputs[0].value.trim();
+        const folder = inputs[1].value.trim();
+        if (!tag || !folder) {
+          msg.className = 'msg error';
+          msg.textContent = 'Each tag rule needs both a tag and a folder path.';
+          return;
+        }
+        rules.push({ tag, folder });
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      try {
+        const res = await fetch('/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ default_folder: defaultFolder, rules }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msg.className = 'msg error';
+          msg.textContent = data.error || 'Failed to save.';
+          return;
+        }
+        msg.className = 'msg success';
+        msg.textContent = '✓ Config saved. Changes take effect on the next file transfer.';
+      } catch (_) {
+        msg.className = 'msg error';
+        msg.textContent = 'Could not reach config server. Please restart Plop.';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Save';
+      }
+    }
+  </script>
+</body>
+</html>

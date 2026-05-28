@@ -89,6 +89,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// ── Config editor server ──────────────────────────────────────────────────
+
+	wizardPort, err := wizard.StartConfigServer(exeDir)
+	if err != nil {
+		slog.Warn("config server failed to start", "error", err)
+	}
+
 	// ── Toast registration ────────────────────────────────────────────────────
 
 	iconPath := filepath.Join(exeDir, "plop1.png")
@@ -115,9 +122,10 @@ func main() {
 
 	slog.Info("plop desktop starting", "server", cfg.ServerURL)
 	tray.Run(&tray.State{
-		LastFolderCh: lastFolderCh,
-		StatusCh:     statusCh,
-		ServerURL:    cfg.ServerURL,
+		LastFolderCh:  lastFolderCh,
+		StatusCh:      statusCh,
+		DefaultFolder: cfg.Tags.DefaultFolder,
+		WizardPort:    wizardPort,
 	})
 }
 

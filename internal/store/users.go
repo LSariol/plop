@@ -33,6 +33,28 @@ func (s *Store) CreateUser(ctx context.Context, username, password string) error
 	return nil
 }
 
+func (s *Store) UpdatePassword(ctx context.Context, username, newHash string) error {
+	_, err := s.pool.Exec(ctx,
+		`UPDATE users SET password_hash = $1 WHERE username = $2`,
+		newHash, username,
+	)
+	if err != nil {
+		return fmt.Errorf("update password: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) DeleteUser(ctx context.Context, username string) error {
+	_, err := s.pool.Exec(ctx,
+		`DELETE FROM users WHERE username = $1`,
+		username,
+	)
+	if err != nil {
+		return fmt.Errorf("delete user: %w", err)
+	}
+	return nil
+}
+
 func (s *Store) Authenticate(ctx context.Context, username, password string) (bool, error) {
 	var hash string
 	err := s.pool.QueryRow(ctx,

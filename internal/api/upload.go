@@ -75,7 +75,10 @@ func (h *Handler) Upload(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
-	json.NewEncoder(w).Encode(map[string]string{"id": id})
+	json.NewEncoder(w).Encode(map[string]any{
+		"id":                id,
+		"desktop_connected": h.hub.HasConnectedClients(userID),
+	})
 }
 
 func splitTags(s string) []string {

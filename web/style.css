@@ -1,37 +1,40 @@
-/* ─── Hearthside Theme ───────────────────────────────────────────────────────
-   Warm cream/ivory backgrounds, warm brown typography, purple brand accent.
+/* ─── Dark Theme ─────────────────────────────────────────────────────────────
+   Deep near-black backgrounds, purple accent, light typography.
    Single stylesheet shared by all pages.
    ─────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Brand (matches plop1.png icon) */
-  --primary:        #5B4FD9;
-  --primary-light:  #7B6FE8;
-  --primary-dark:   #4A3DBE;
+  /* Brand */
+  --primary:        #7B6FE8;
+  --primary-light:  #9B8FF5;
+  --primary-dark:   #5B4FD9;
 
-  /* Warm surfaces */
-  --bg:             #FAF7F1;
-  --bg-warm:        #F2EBE0;
-  --bg-card:        #FFFFFF;
+  /* Dark surfaces */
+  --bg:             #0F0F13;
+  --bg-warm:        #16161E;
+  --bg-card:        #1C1C28;
 
-  /* Warm typography */
-  --text:           #2C2018;
-  --text-soft:      #6B5848;
-  --text-muted:     #A89880;
+  /* Light typography */
+  --text:           #E8E6F2;
+  --text-soft:      #9B97B8;
+  --text-muted:     #5C587A;
 
-  /* Warm borders & shadows */
-  --border:         #E8DDD0;
-  --shadow-sm:      0 2px 8px  rgba(44, 32, 24, 0.06);
-  --shadow-md:      0 4px 16px rgba(44, 32, 24, 0.10);
-  --shadow-lg:      0 8px 28px rgba(44, 32, 24, 0.14);
+  /* Dark borders & shadows */
+  --border:         #2A2A3E;
+  --shadow-sm:      0 2px 8px  rgba(0, 0, 0, 0.30);
+  --shadow-md:      0 4px 16px rgba(0, 0, 0, 0.40);
+  --shadow-lg:      0 8px 28px rgba(0, 0, 0, 0.50);
 
   /* Feedback */
   --success:        #4E9070;
-  --success-bg:     rgba(78, 144, 112, 0.10);
-  --success-border: rgba(78, 144, 112, 0.25);
-  --error:          #C03A3A;
-  --error-bg:       rgba(192, 58, 58, 0.10);
-  --error-border:   rgba(192, 58, 58, 0.25);
+  --success-bg:     rgba(78, 144, 112, 0.12);
+  --success-border: rgba(78, 144, 112, 0.30);
+  --error:          #E05555;
+  --error-bg:       rgba(224, 85, 85, 0.12);
+  --error-border:   rgba(224, 85, 85, 0.30);
+  --warning:        #D4943A;
+  --warning-bg:     rgba(212, 148, 58, 0.12);
+  --warning-border: rgba(212, 148, 58, 0.30);
 
   /* Shape */
   --radius-sm:  10px;
@@ -262,7 +265,7 @@ input:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(91, 79, 217, 0.12);
+  box-shadow: 0 0 0 3px rgba(123, 111, 232, 0.12);
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -321,7 +324,7 @@ a.btn-outline {
 
 .btn-outline:hover,
 a.btn-outline:hover {
-  background: rgba(91, 79, 217, 0.07);
+  background: rgba(123, 111, 232, 0.07);
   filter: none;
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
@@ -369,9 +372,9 @@ a.btn-outline:hover {
 
 .status.info {
   display: block;
-  background: rgba(91, 79, 217, 0.07);
+  background: rgba(123, 111, 232, 0.07);
   color: var(--primary);
-  border: 1px solid rgba(91, 79, 217, 0.20);
+  border: 1px solid rgba(123, 111, 232, 0.20);
 }
 
 /* ─── Helper text & links ────────────────────────────────────────────────── */
@@ -415,7 +418,7 @@ a.btn-outline:hover {
 .upload-zone:hover,
 .upload-zone.drag-over {
   border-color: var(--primary-light);
-  background: rgba(91, 79, 217, 0.06);
+  background: rgba(123, 111, 232, 0.06);
 }
 
 .upload-zone.has-files {
@@ -503,7 +506,7 @@ a.btn-outline:hover {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(30, 20, 10, 0.60);
+  background: rgba(0, 0, 0, 0.60);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -534,9 +537,9 @@ a.btn-outline:hover {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(91, 79, 217, 0.07);
+  background: rgba(123, 111, 232, 0.07);
   color: var(--primary);
-  border: 1.5px solid rgba(91, 79, 217, 0.30);
+  border: 1.5px solid rgba(123, 111, 232, 0.30);
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.82rem;
@@ -548,7 +551,7 @@ a.btn-outline:hover {
 }
 
 .tag-chip:hover {
-  background: rgba(91, 79, 217, 0.13);
+  background: rgba(123, 111, 232, 0.13);
 }
 
 .tag-chip .remove {
@@ -603,6 +606,127 @@ footer {
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     gap: 8px;
   }
+}
+
+/* ─── Upload Progress Screen ────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.progress-section {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.step-card {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.step-icon {
+  flex-shrink: 0;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.step-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.step-error-text {
+  display: none;
+  font-size: 0.82rem;
+  color: var(--error);
+  margin-top: 0.2rem;
+}
+
+/* pending — default, already styled above */
+
+/* active — shimmer sweep */
+.step-card.active {
+  border-color: var(--primary);
+}
+.step-card.active .step-icon {
+  background: var(--primary-light);
+}
+.step-card.active .step-label {
+  color: var(--text);
+}
+.step-card.active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(123,111,232,0.12) 50%, transparent 100%);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* complete */
+.step-card.complete {
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+.step-card.complete .step-icon {
+  background: var(--success);
+  color: #fff;
+}
+.step-card.complete .step-icon::after { content: '✓'; }
+.step-card.complete .step-label { color: var(--success); }
+
+/* failed */
+.step-card.failed {
+  border-color: var(--error-border);
+  background: var(--error-bg);
+  flex-wrap: wrap;
+}
+.step-card.failed .step-icon {
+  background: var(--error);
+  color: #fff;
+}
+.step-card.failed .step-icon::after { content: '✕'; }
+.step-card.failed .step-label { color: var(--error); }
+.step-card.failed .step-error-text { display: block; width: 100%; padding-left: 2.3rem; }
+
+/* cached / warning */
+.step-card.cached {
+  border-color: var(--warning-border);
+  background: var(--warning-bg);
+}
+.step-card.cached .step-icon {
+  background: var(--warning);
+  color: #fff;
+}
+.step-card.cached .step-icon::after { content: '~'; }
+.step-card.cached .step-label { color: var(--warning); }
+
+.return-btn {
+  display: none;
+  margin-top: 0.5rem;
+  width: 100%;
 }
 
 /* ─── Accessibility ──────────────────────────────────────────────────────── */
