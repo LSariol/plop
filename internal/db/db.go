@@ -43,6 +43,11 @@ func New(ctx context.Context, dbURL string) (*pgxpool.Pool, error) {
 
 
 func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
+	// Ensure the schema exists before anything else (handles fresh DB or DROP SCHEMA).
+	if _, err := pool.Exec(ctx, `CREATE SCHEMA IF NOT EXISTS plop`); err != nil {
+		return fmt.Errorf("create schema: %w", err)
+	}
+
 	// Create a tracking table if it doesn't exist
 	_, err := pool.Exec(ctx, `
         CREATE TABLE IF NOT EXISTS plop.schema_migrations (
