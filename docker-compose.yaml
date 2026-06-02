@@ -15,7 +15,7 @@ services:
       MAX_UPLOAD_MB: 50
       LOG_FORMAT: json
       LOG_LEVEL: info
-      ALLOW_REGISTRATION: false
+      ALLOW_REGISTRATION: true
       TRUSTED_PROXY: true
     volumes:
       - payloads:/var/plop/payloads
