@@ -68,6 +68,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overscroll-behavior: none;
 }
 
 /* ─── Header ─────────────────────────────────────────────────────────────── */
@@ -620,9 +621,7 @@ footer {
   flex-direction: column;
   gap: 0.75rem;
   width: 100%;
-  max-width: var(--max-w);
-  margin: 0 auto;
-  padding: 0 1rem;
+  padding-top: 8px;
 }
 
 .step-card {

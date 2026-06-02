@@ -6,13 +6,13 @@
   <title>Plop — Config</title>
   <style>
     :root {
-      --primary: #5B4FD9;
-      --bg:      #FAF7F1;
-      --card:    #FFFFFF;
-      --text:    #2C2018;
-      --muted:   #A89880;
-      --border:  #E8DDD0;
-      --error:   #C03A3A;
+      --primary: #7B6FE8;
+      --bg:      #0F0F13;
+      --card:    #1C1C28;
+      --text:    #E8E6F2;
+      --muted:   #5C587A;
+      --border:  #2A2A3E;
+      --error:   #E05555;
       --success: #4E9070;
       --radius:  14px;
     }
@@ -34,7 +34,7 @@
       padding: 2rem;
       width: 100%;
       max-width: 520px;
-      box-shadow: 0 4px 16px rgba(44,32,24,0.10);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.40);
     }
     h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.3rem; }
     .subtitle { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.5; }
@@ -63,11 +63,11 @@
       border-radius: 10px;
       font-size: 1rem;
       color: var(--text);
-      background: var(--bg);
+      background: #16161E;
       outline: none;
       transition: border-color 0.15s;
     }
-    input:focus { border-color: var(--primary); background: #fff; }
+    input:focus { border-color: var(--primary); background: #16161E; }
     input:disabled { opacity: 0.55; cursor: not-allowed; }
     .hint { font-size: 0.8rem; color: var(--muted); margin-top: 0.4rem; line-height: 1.4; }
     .rule-row {
@@ -128,8 +128,8 @@
       line-height: 1.5;
       display: none;
     }
-    .msg.error   { background: rgba(192,58,58,0.10);  color: var(--error);   display: block; }
-    .msg.success { background: rgba(78,144,112,0.10); color: var(--success); display: block; }
+    .msg.error   { background: rgba(224,85,85,0.12);  color: var(--error);   display: block; }
+    .msg.success { background: rgba(78,144,112,0.12); color: var(--success); display: block; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
   </style>
 </head>

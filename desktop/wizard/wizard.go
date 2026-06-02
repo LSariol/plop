@@ -55,16 +55,17 @@ func Run(exeDir string) error {
 
 	mux.HandleFunc("POST /setup", func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
-			ServerURL   string `json:"server_url"`
-			MachineName string `json:"machine_name"`
-			PairingCode string `json:"pairing_code"`
+			ServerURL     string `json:"server_url"`
+			MachineName   string `json:"machine_name"`
+			PairingCode   string `json:"pairing_code"`
+			DefaultFolder string `json:"default_folder"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			writeWizardError(w, "invalid request", http.StatusBadRequest)
 			return
 		}
 		if body.ServerURL == "" || body.MachineName == "" || body.PairingCode == "" {
-			writeWizardError(w, "all fields are required", http.StatusBadRequest)
+			writeWizardError(w, "server URL, machine name, and pairing code are required", http.StatusBadRequest)
 			return
 		}
 
@@ -75,7 +76,7 @@ func Run(exeDir string) error {
 		}
 
 		// Write config.toml
-		if err := writeConfig(exeDir, body.ServerURL, body.MachineName); err != nil {
+		if err := writeConfig(exeDir, body.ServerURL, body.MachineName, body.DefaultFolder); err != nil {
 			writeWizardError(w, "could not write config: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -241,9 +242,11 @@ func callPair(serverURL, machineName, pairingCode string) (string, error) {
 	return result.DesktopToken, nil
 }
 
-func writeConfig(exeDir, serverURL, machineName string) error {
-	home, _ := os.UserHomeDir()
-	defaultFolder := filepath.ToSlash(filepath.Join(home, "Desktop", "Plop"))
+func writeConfig(exeDir, serverURL, machineName, defaultFolder string) error {
+	if defaultFolder == "" {
+		home, _ := os.UserHomeDir()
+		defaultFolder = filepath.ToSlash(filepath.Join(home, "Desktop", "Plop"))
+	}
 	content := fmt.Sprintf("server_url   = %q\nmachine_name = %q\n\n[tags]\ndefault_folder = %q\n",
 		serverURL, machineName, defaultFolder)
 	return os.WriteFile(filepath.Join(exeDir, "config.toml"), []byte(content), 0644)

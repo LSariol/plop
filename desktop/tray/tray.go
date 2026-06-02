@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/getlantern/systray"
+	"fyne.io/systray"
 )
 
 //go:embed icon.ico
@@ -82,7 +82,7 @@ func onReady(s *State) {
 			f := lastFolder
 			mu.Unlock()
 			if f != "" {
-				exec.Command("explorer.exe", f).Start()
+				exec.Command("explorer.exe", filepath.FromSlash(f)).Start()
 			}
 		}
 	}()
@@ -90,7 +90,7 @@ func onReady(s *State) {
 	go func() {
 		for range mOpenDownloads.ClickedCh {
 			if s.DefaultFolder != "" {
-				exec.Command("explorer.exe", s.DefaultFolder).Start()
+				exec.Command("explorer.exe", filepath.FromSlash(s.DefaultFolder)).Start()
 			}
 		}
 	}()
