@@ -27,6 +27,7 @@ func (h *Handler) Upload(w http.ResponseWriter, r *http.Request) {
 		case errors.As(err, &netErr) && netErr.Timeout():
 			writeError(w, "upload timed out", http.StatusRequestTimeout)
 		default:
+			slog.Warn("parse multipart form", "error", err)
 			writeError(w, "invalid upload", http.StatusBadRequest)
 		}
 		return
