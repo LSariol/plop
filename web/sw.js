@@ -50,15 +50,13 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Non-GET requests (uploads, etc.) are left alone entirely — not even
+    // passed through respondWith(fetch(event.request)). Re-fetching a
+    // streamed request body (e.g. FormData with a File) from inside the SW
+    // is known to truncate the body on WebKit/iOS Safari, so callers must
+    // rely on the network to handle these directly and their own try/catch
+    // for offline handling.
     if (event.request.method !== 'GET') {
-        event.respondWith(
-            fetch(event.request).catch(() =>
-                new Response(
-                    JSON.stringify({ error: 'Offline — cannot reach server' }),
-                    { status: 503, headers: { 'Content-Type': 'application/json' } }
-                )
-            )
-        );
         return;
     }
 
