@@ -2,7 +2,9 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 	"path"
 	"strings"
@@ -17,7 +19,16 @@ import (
 func (h *Handler) Upload(w http.ResponseWriter, r *http.Request) {
 	r.Body = http.MaxBytesReader(w, r.Body, h.cfg.MaxUploadBytes)
 	if err := r.ParseMultipartForm(h.cfg.MaxUploadBytes); err != nil {
-		writeError(w, "payload too large", http.StatusRequestEntityTooLarge)
+		var maxBytesErr *http.MaxBytesError
+		var netErr net.Error
+		switch {
+		case errors.As(err, &maxBytesErr):
+			writeError(w, "payload too large", http.StatusRequestEntityTooLarge)
+		case errors.As(err, &netErr) && netErr.Timeout():
+			writeError(w, "upload timed out", http.StatusRequestTimeout)
+		default:
+			writeError(w, "invalid upload", http.StatusBadRequest)
+		}
 		return
 	}
 	defer r.MultipartForm.RemoveAll()
